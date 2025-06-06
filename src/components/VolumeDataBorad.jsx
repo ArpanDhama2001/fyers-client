@@ -6,6 +6,7 @@ const VolumeDataBoard = ({
   apiResponse,
   delayedCallVolume,
   delayedPutVolume,
+  minutes,
 }) => {
   const [callVolume, setCallVolume] = React.useState(0);
   const [putVolume, setPutVolume] = React.useState(0);
@@ -29,12 +30,21 @@ const VolumeDataBoard = ({
           <p className="text-2xl font-bold text-teal-600">
             {formatToIndianShort(callVolume)}
           </p>
-          <p className="text-2xl font-bold text-gray-600">
+          <p
+            className={`text-2xl font-bold text-gray-600 ${
+              minutes === "-1" ? "hidden" : ""
+            }`}>
             {delayedCallVolume != null && !isNaN(delayedCallVolume) ? (
               formatToIndianShort(delayedCallVolume)
             ) : (
               <span className="text-gray-500">No Data</span>
             )}
+          </p>
+          <p
+            className={`text-2xl font-bold text-gray-600 ${
+              minutes !== "-1" ? "hidden" : ""
+            }`}>
+            {formatToIndianShort(callVolume)}
           </p>
         </div>
         <div className="bg-gray-100 p-4 rounded shadow">
@@ -42,12 +52,21 @@ const VolumeDataBoard = ({
           <p className="text-2xl font-bold text-pink-600">
             {formatToIndianShort(putVolume)}
           </p>
-          <p className="text-2xl font-bold text-gray-600">
+          <p
+            className={`text-2xl font-bold text-gray-600 ${
+              minutes === "-1" ? "hidden" : ""
+            }`}>
             {delayedPutVolume != null && !isNaN(delayedPutVolume) ? (
               formatToIndianShort(delayedPutVolume)
             ) : (
               <span className="text-gray-500">No Data</span>
             )}
+          </p>
+          <p
+            className={`text-2xl font-bold text-gray-600 ${
+              minutes !== "-1" ? "hidden" : ""
+            }`}>
+            {formatToIndianShort(putVolume)}
           </p>
         </div>
       </div>

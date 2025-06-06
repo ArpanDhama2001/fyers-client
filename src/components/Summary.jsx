@@ -33,11 +33,11 @@ const Summary = ({ apiResponse, strikeCount, lTime, dTime }) => {
       </div>
       <div className="flex justify-center gap-4 p-4 rounded mb-4">
         <span className="bg-teal-100 p-4 rounded">
-          Start Time: {lTime ? lTime.toLocaleString() : "N/A"}
+          Start Time: {lTime ? new Date(lTime).toLocaleTimeString() : "N/A"}
         </span>
         <br />
         <span className="bg-teal-100 p-4 rounded">
-          End Time: {dTime ? dTime.toLocaleString() : "N/A"}
+          End Time: {dTime ? new Date(dTime).toLocaleTimeString() : "N/A"}
         </span>
         <br />
       </div>

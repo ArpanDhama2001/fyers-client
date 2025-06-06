@@ -32,7 +32,7 @@ export const getAccessToken = async () => {
   try {
     if (typeof window !== "undefined" && window.localStorage) {
       const stored = localStorage.getItem("accessToken");
-      //   console.log("tokenManager: Stored access token:", stored);
+      // console.log("tokenManager: Stored access token:", stored);
       if (stored) return stored;
     }
 
@@ -41,7 +41,14 @@ export const getAccessToken = async () => {
     const newToken = await setAccessToken();
     return newToken;
   } catch (error) {
-    console.log("tokenManager: Error getting access token:", error);
-    throw new Error("Failed to get access token");
+    const response = await axios.get(`${apiEndpoints.getAccessToken}`);
+    // console.log("tokenManager: Response from getAccessToken:", response);
+
+    if (response.status === 200) {
+      const accessToken = response.data.access_token;
+      return accessToken;
+    } else {
+      throw new Error("Failed to set access token", error);
+    }
   }
 };

@@ -110,6 +110,7 @@ const MarketData = (props, ref) => {
             apiResponse={apiResponse}
             calloi={latestData && data ? latestData.callOi - data.callOi : null}
             putoi={latestData && data ? latestData.putOi - data.putOi : null}
+            minutes={minutesAgo}
           />
           <VolumeDataBoard
             apiResponse={apiResponse}
@@ -121,6 +122,7 @@ const MarketData = (props, ref) => {
             delayedPutVolume={
               latestData && data ? latestData.putVolume - data.putVolume : null
             }
+            minutes={minutesAgo}
           />
           <OptionsChain apiResponse={apiResponse} />
         </>
