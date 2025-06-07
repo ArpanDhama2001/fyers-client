@@ -25,7 +25,7 @@ function App() {
   useEffect(() => {
     const fetchToken = async () => {
       const response = await getAccessTokenFromDB();
-      console.warn("App.jsx:", response);
+      // console.warn("App.jsx:", response);
       setAccessToken(response.data.access_token);
       setRefreshTokenExpiry(response.data.refresh_token_expiry);
     };
