@@ -1,45 +1,33 @@
 import React from "react";
 
-const Summary = ({ apiResponse, strikeCount, lTime, dTime }) => {
+const Summary = ({ apiResponse, strikeCount }) => {
   return (
-    <div className="container mx-auto p-4 text-xl">
-      <div className="flex justify-around translate-x-[-50px] items-center mb-4 gap-4 p-4 rounded">
-        <div className="bg-teal-100 p-4 rounded">
-          Spot Price ={" "}
-          {apiResponse && apiResponse.optionsChain
-            ? apiResponse.optionsChain[0].ltp
-            : "N/A"}
-        </div>
-        <div className="bg-teal-100 p-4 rounded">
-          Strike Count = {strikeCount}
-        </div>
-        <div className="bg-teal-100 p-4 rounded">
-          IndiaVIX = {apiResponse ? apiResponse.indiavixData.ltp : "N/A"}
-          <span
-            className={`px-4 py-2 ${
-              apiResponse.indiavixData.ltpch < 0
-                ? "text-red-600"
-                : "text-green-600"
-            }`}>
-            {apiResponse ? ` (${apiResponse.indiavixData.ltpch})` : ""}
-          </span>
-        </div>
-        <div className="bg-teal-100 p-4 rounded">
-          PCR ={" "}
-          {apiResponse
-            ? (apiResponse.putOi / apiResponse.callOi).toFixed(2)
-            : "N/A"}
-        </div>
+    <div className="bg-red-500 text-white text-2xl flex rounded mb-4">
+      <div className="flex-1 px-4 py-3 border-r-2 border-white text-center">
+        Spot Price ={" "}
+        {apiResponse && apiResponse.optionsChain
+          ? apiResponse.optionsChain[0].ltp
+          : "N/A"}
       </div>
-      <div className="flex justify-center gap-4 p-4 rounded mb-4">
-        <span className="bg-teal-100 p-4 rounded">
-          Start Time: {lTime ? new Date(lTime).toLocaleTimeString() : "N/A"}
+      <div className="flex-1 px-4 py-3 border-r-2 border-white text-center">
+        Strike Count = {strikeCount}
+      </div>
+      <div className="flex-1 px-4 py-3 border-r-2 border-white text-center">
+        IndiaVIX = {apiResponse ? apiResponse.indiavixData.ltp : "N/A"}
+        <span
+          className={`${
+            apiResponse.indiavixData.ltpch < 0
+              ? "text-yellow-200"
+              : "text-green-200"
+          }`}>
+          {apiResponse ? ` (${apiResponse.indiavixData.ltpch})` : ""}
         </span>
-        <br />
-        <span className="bg-teal-100 p-4 rounded">
-          End Time: {dTime ? new Date(dTime).toLocaleTimeString() : "N/A"}
-        </span>
-        <br />
+      </div>
+      <div className="flex-1 px-4 py-3 text-center">
+        PCR ={" "}
+        {apiResponse
+          ? (apiResponse.putOi / apiResponse.callOi).toFixed(2)
+          : "N/A"}
       </div>
     </div>
   );

@@ -1,13 +1,25 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import { fyersModel } from "fyers-web-sdk-v3";
 import { sessionData, apiEndpoints } from "../utils/enums";
 import axios from "axios";
+import { remainingTime } from "../utils/remainingTime";
 
-const SetAccessToken = ({ scrollTo }) => {
+const SetAccessToken = ({ scrollTo, setAccessToken, refreshTokenExpiry }) => {
   const [authCodeURL, setAuthCodeURL] = useState(null);
   const [authCode, setAuthCode] = useState("");
+  const [remTime, setRemTime] = useState();
   const { appId, redirectURL, secretKey } = sessionData;
+
+  useEffect(() => {
+    setRemTime(remainingTime(refreshTokenExpiry));
+    const interval = setInterval(() => {
+      setRemTime(remainingTime(refreshTokenExpiry));
+    }, 60 * 1000); // every 1 minute
+
+    // Cleanup interval on unmount
+    return () => clearInterval(interval);
+  }, [refreshTokenExpiry]);
 
   const onClickHandler = async () => {
     var fyers = new fyersModel();
@@ -28,12 +40,16 @@ const SetAccessToken = ({ scrollTo }) => {
       if (response.status === 200) {
         setAuthCode("");
         alert("Access Token Set Successfully");
+        setAccessToken(response.data.access_token);
       } else {
-        throw new Error("Failed to set access token");
+        throw new Error({
+          msg: "SetAccessTokenHandler: Failed to create token",
+        });
       }
     } catch (error) {
-      console.error("Error setting access token:", error);
       alert("Failed to set access token. Please try again.");
+      console.error("SetAccessTokenHandler:", error);
+      throw error;
     }
   };
   return (
@@ -70,6 +86,13 @@ const SetAccessToken = ({ scrollTo }) => {
           className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md mt-2">
           Submit Auth Code
         </button>
+      </div>
+      <div className="text-2xl">
+        Refresh Token Expires in:{" "}
+        {/* {new Date(refreshTokenExpiry).toLocaleString()} */}
+        <span className="text-red-500">{remTime?.days}</span> days{" "}
+        <span className="text-red-500">{remTime?.hours}</span> hours and{" "}
+        <span className="text-red-500">{remTime?.mins}</span> minutes
       </div>
     </div>
   );

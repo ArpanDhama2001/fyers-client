@@ -1,54 +1,21 @@
 import axios from "axios";
 import { apiEndpoints } from "./enums";
 
-let tokenCache = null;
-
-export const setAccessToken = async () => {
+export const getAccessTokenFromDB = async () => {
   try {
+    // console.log("tokenManager: In getAcessTokenFromDB()");
     const response = await axios.get(`${apiEndpoints.getAccessToken}`);
-    // console.log("tokenManager: Response from getAccessToken:", response);
+    console.log("tokenManager: Response from getAccessToken:", response);
 
     if (response.status === 200) {
-      const accessToken = response.data.access_token;
-
-      tokenCache = accessToken;
-
-      if (typeof window !== "undefined" && window.localStorage) {
-        // console.log("tokenManager: Setting access token in localStorage");
-        localStorage.setItem("accessToken", accessToken);
-      }
-
-      return accessToken;
+      return response;
     } else {
-      throw new Error("Failed to set access token");
+      throw new Error(
+        "Failed to get access token. Something went wrong while getting token from DB."
+      );
     }
   } catch (error) {
-    console.log("tokenManager: Error setting access token:", error);
-    throw new Error("Failed to set access token");
-  }
-};
-
-export const getAccessToken = async () => {
-  try {
-    if (typeof window !== "undefined" && window.localStorage) {
-      const stored = localStorage.getItem("accessToken");
-      // console.log("tokenManager: Stored access token:", stored);
-      if (stored) return stored;
-    }
-
-    if (tokenCache) return tokenCache;
-
-    const newToken = await setAccessToken();
-    return newToken;
-  } catch (error) {
-    const response = await axios.get(`${apiEndpoints.getAccessToken}`);
-    // console.log("tokenManager: Response from getAccessToken:", response);
-
-    if (response.status === 200) {
-      const accessToken = response.data.access_token;
-      return accessToken;
-    } else {
-      throw new Error("Failed to set access token", error);
-    }
+    console.log("tokenManager: Error getting access token:", error);
+    throw new Error("Failed to get access token");
   }
 };

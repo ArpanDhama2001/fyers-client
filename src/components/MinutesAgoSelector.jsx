@@ -20,7 +20,6 @@ const MinutesAgoSelector = ({ onMinutesChange }) => {
         <option value="181">3 hrs</option>
         <option value="241">4 hrs</option>
         <option value="301">5 hrs</option>
-        <option value="361">6 hrs</option>
         <option value="-1">Full Day</option>
       </select>
     </div>

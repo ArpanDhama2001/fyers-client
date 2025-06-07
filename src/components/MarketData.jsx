@@ -4,12 +4,16 @@ import SymbolInput from "./SymbolInput";
 import { fetchData } from "../api/fyersAPI/fyersAPI";
 import StrikeCountSelector from "./StrikeCountSelector";
 import OIDataBoard from "./OIDataBoard";
-import VolumeDataBoard from "./VolumeDataBorad";
 import Summary from "./Summary"; // assuming you have this
 import OptionsChain from "./OptionsChain";
 import NoData from "./NoData"; // assuming you have this
 import MinutesAgoSelector from "./MinutesAgoSelector";
-import { getDataByMinutesAgo } from "../api/mogoDB/service";
+import {
+  getDataByMinutesAgo,
+  getLatestDataFromDB,
+} from "../api/mogoDB/service";
+import { adjustedMinutes } from "../utils/adjustedMinutes";
+import Summanry2 from "./Summanry2";
 
 const MarketData = (props, ref) => {
   const [symbol, setSymbol] = useState("NSE:NIFTY50-INDEX");
@@ -22,17 +26,18 @@ const MarketData = (props, ref) => {
   const [error, setError] = useState(null);
 
   const fetchOptionChainData = useCallback(async () => {
+    let cnt = 1;
     try {
       setLoading(true);
-      const result = await fetchData(symbol, strikeCount);
-      setApiResponse(result || {});
+      const result = await fetchData(symbol, strikeCount, props.accessToken);
+      setApiResponse(result);
     } catch (err) {
-      console.error("Fetch failed:", err);
-      setError("Failed to fetch option chain data.");
+      setError(err.message);
     } finally {
+      setError("");
       setLoading(false);
     }
-  }, [symbol, strikeCount]);
+  }, [symbol, strikeCount, props.accessToken]);
 
   useEffect(() => {
     fetchOptionChainData();
@@ -50,7 +55,9 @@ const MarketData = (props, ref) => {
 
   const getLatestData = useCallback(async () => {
     try {
-      const latestData = await getDataByMinutesAgo(symbol, strikeCount, 1);
+      const mins = adjustedMinutes(1);
+      const latestData = await getDataByMinutesAgo(symbol, strikeCount, mins);
+      // const latestData = await getLatestDataFromDB(symbol, strikeCount);
       setLatestData(latestData);
     } catch (error) {
       console.log("Error fetching latest OI data:", error);
@@ -59,11 +66,8 @@ const MarketData = (props, ref) => {
 
   const getDelayedData = useCallback(async () => {
     try {
-      const delayedData = await getDataByMinutesAgo(
-        symbol,
-        strikeCount,
-        minutesAgo
-      );
+      const mins = adjustedMinutes(minutesAgo);
+      const delayedData = await getDataByMinutesAgo(symbol, strikeCount, mins);
       setData(delayedData);
     } catch (error) {
       console.log("Error fetching delayed OI data:", error);
@@ -96,33 +100,20 @@ const MarketData = (props, ref) => {
 
       {/* Display Boards */}
       {loading && <p className="text-center text-blue-600">Loading...</p>}
-      {error && <p className="text-center text-red-500">{error}</p>}
+      {error && <p className="text-center text-red-500 text-2xl">{error}</p>}
 
       {apiResponse ? (
         <>
-          <Summary
-            apiResponse={apiResponse}
-            strikeCount={strikeCount}
-            lTime={latestData?.timestamp}
-            dTime={data?.timestamp}
-          />
+          <Summary apiResponse={apiResponse} strikeCount={strikeCount} />
+          <Summanry2 apiResponse={apiResponse} />
           <OIDataBoard
             apiResponse={apiResponse}
             calloi={latestData && data ? latestData.callOi - data.callOi : null}
             putoi={latestData && data ? latestData.putOi - data.putOi : null}
             minutes={minutesAgo}
-          />
-          <VolumeDataBoard
-            apiResponse={apiResponse}
-            delayedCallVolume={
-              latestData && data
-                ? latestData.callVolume - data.callVolume
-                : null
-            }
-            delayedPutVolume={
-              latestData && data ? latestData.putVolume - data.putVolume : null
-            }
-            minutes={minutesAgo}
+            lTime={latestData?.timestamp}
+            dTime={data?.timestamp}
+            symbol={symbol}
           />
           <OptionsChain apiResponse={apiResponse} />
         </>
