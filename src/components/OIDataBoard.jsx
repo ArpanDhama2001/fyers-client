@@ -1,6 +1,6 @@
 import React from "react";
 import { formatToIndianShort } from "../utils/formatToIndianShort";
-import { getChangeOI } from "../utils/getChangeOi";
+import { getChangeOI } from "../utils/getChangeOI";
 
 const OIDataBoard = ({ apiResponse, calloi, putoi, minutes, lTime, dTime }) => {
   const { call: total_call_oi, put: total_put_oi } = getChangeOI(apiResponse);
